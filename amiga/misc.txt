@@ -1,0 +1,20 @@
+http://eab.abime.net/showthread.php?t=56211&page=7
+
+* Standard 1M ROM addresses are: "extended" 0xe00000-0xe7ffff and "normal" at 0xf80000-0xffffff. All Amiga models that support 1M ROMs use above addresses.
+
+* I know that the A600 supports 1M roms. There are other models that support this?
+* A500 (later revisions), A1200, CD32. A600 and A1200 support max 2M ROMs. (second 1M at 0xa80000-0xb7ffff)
+* What about A3000's? - AFAIK it also has 512K limit (Fat Gary limitation)
+
+
+ Originally Posted by NovaCoder View Post
+Ok I download loaded the package and found two ROM files (standard + extended), I assume I need to 'stick' these together (eg using Remus) to create a 1MB ROM for my ACA?
+It's even easier - you just concatenate them together.
+
+ACATune will detect the 1M rom and put everything in the right place - it's how I test on my A1200.
+
+I think its ext-then-rom... or maybe rom-then-ext.
+
+One of them will work.
+
+
