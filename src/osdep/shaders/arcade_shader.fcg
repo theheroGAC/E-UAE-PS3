@@ -1,0 +1,39 @@
+void main
+(
+	float4 position : TEXCOORD0,
+	float3 normal : TEXCOORD1,
+	float2 texcoord : TEXCOORD2,
+	
+	uniform float4 scanline,
+	uniform sampler2D texture,
+	
+	out float4 oColor
+)
+{
+	//Scanline parameters
+	//-------------------------------------------------
+	//scanline.x => scanline density, values 100 - 200
+	//scanline.y => scanline depth / contrast, values 2 - 10
+	//scanline.z => scanline brightnes, value 0 - 1
+	//scanline.w => scanline type horizontal (value 1.0f), vertical (value 2.0f), none (val 0.0f)
+
+	//no scanline
+	float dark = scanline.z;
+
+	
+	//vertical scanline
+	if (scanline.w == 0.2f) {
+		dark += (sin(1.333f * position.x * scanline.x) / scanline.y);
+	}
+	 
+	//horizontal scanline
+	if (scanline.w == 0.1f) {
+		dark += (sin(position.y * scanline.x) / scanline.y);
+	}
+	
+	
+	float4 texel = tex2D(texture,texcoord);
+	float3 color = texel.xyz  * dark;
+
+	oColor = float4(color, texel.w);
+}
