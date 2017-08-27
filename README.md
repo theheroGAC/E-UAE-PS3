@@ -1,4 +1,4 @@
-# e-uae
+# E-UAE PS3
 Amiga emulator for PS3
 E-UAE 0.8.29-WIP4
 =================
