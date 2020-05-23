@@ -39,6 +39,7 @@ http://caps-project.org/). A suitable plug-in, downloadble from the CAPS web
 site, must be installed on the host system to allow IPF images to be used.
 (At the time of writing, the plug-in is available for only x86 and PPC Linux
 hosts and AmigaOS hosts.)
+Since R11 release, CAPS lib is present as static library. Full IPF support is avialable.
 
 
 Creating blank ADF images
