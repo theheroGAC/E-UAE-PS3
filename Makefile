@@ -5,13 +5,13 @@ endif
 
 include $(PSL1GHT)/ppu_rules
 
-RELEASE		:=	r10
+RELEASE		:=	r11
 
 TARGET		:=	e-uae-0.8.29-ps3_$(RELEASE)
 BUILD		:=	build
 SOURCES		:=	src
 SOURCES_CPP :=  src/osdep
-BUILD_DIRS  :=  dms machdep osdep sounddep osdep/shaders
+BUILD_DIRS  :=  dms machdep osdep sounddep osdep/shaders caps
 INCLUDES    :=	src src/include src/zlib
 DATA		:=	data
 
@@ -22,11 +22,11 @@ PKGFILES	:=	release
 
 ICON0		:=	ICON0.PNG
 
-CFLAGS_USER	+= -std=gnu99 
-CXXFLAGS_USER	+= -Wall
+#CFLAGS_USER	+= -std=gnu99 
+#CXXFLAGS_USER	+= -Wall
 
 DEFINES := -D__PS3__ 
-DEFINES += -DFPUEMU -DCPUEMU_0 -DCPUEMU_5 -DCPUEMU_6 
+DEFINES += -DFPUEMU -DCPUEMU_0 -DCPUEMU_5 -DCPUEMU_6 -DCAPS
 DEFINES +=  -DAGA -DFDI2RAW -DFILESYS -DAUTOCONFIG -DSAVESTATE -DENFORCER -DACTION_REPLAY -DSUPPORT_THREADS -DDRIVESOUND -DRELEASE_V
 #CPPFLAGS =  -I/usr/include  -DFPUEMU -DCPUEMU_0 -DCPUEMU_5 -DCPUEMU_6 -DUNALIGNED_PROFITABLE -DAGA -DAUTOCONFIG -DFILESYS -DBSDSOCKET -DSUPPORT_THREADS -DFDI2RAW -DDEBUGGER -DSAVESTATE -DENFORCER -DACTION_REPLAY  -DSHM_SUPPORT_LINKS=1
 
@@ -43,15 +43,16 @@ endif
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-Wall -mcpu=cell $(MACHDEP) $(DEFINES)  $(INCLUDE) $(CFLAGS_USER)
-CXXFLAGS	=	$(CFLAGS)
+CFLAGS		=	-Wall -mcpu=cell $(MACHDEP) $(DEFINES)  $(INCLUDE) -std=gnu99 $(CFLAGS_USER)
+CXXFLAGS	=	-Wall -mcpu=cell $(MACHDEP) $(DEFINES)  $(INCLUDE) $(CFLAGS_USER)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lgcm_sys -lrsx -lsysutil -lio -lsysmodule -laudio -lcairo -lm -lnet -lfreetype -lz -lsimdmath -lpixman-1 -lrt -llv2
+LIBS	:=	-lgcm_sys -lrsx -lsysutil -lio -lsysmodule -laudio -lcairo -lm -lnet \
+			-lfreetype -lz -lsimdmath -lpixman-1 -lrt -llv2 -lcapsimg -lsysfs
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -93,7 +94,7 @@ PPU_SRCS := main.c newcpu.c fpp.c memory.c custom.c serial.c cia.c \
 	cfgfile.c inputdevice.c gfxutil.c audio.c drawing.c \
 	identify.c disk.c savestate.c uaelib.c fdi2raw.c \
 	hotkeys.c enforcer.c  missing.c \
-	readcpu.c writelog.c unzip.c zfile.c sinctable.c
+	readcpu.c writelog.c unzip.c zfile.c sinctable.c caps/caps.c
 
 PPU_SRCS += hardfile.c hardfile_unix.c scsi-none.c fsusage.c  crc32.c \
 	events.c misc.c 
@@ -160,7 +161,7 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES), -I$(CURDIR)/$(dir)) \
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					$(LIBPSL1GHT_LIB)
+					$(LIBPSL1GHT_LIB) -L$(CURDIR)/src/caps
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean
