@@ -106,6 +106,10 @@ hardfile=read-write,0,0,0,512,/dev_usb000/uae/system.hdf
   formated to OFS (old file system), the second set (zeros) is for harddisk files
   formated to RDB (fast file system). 
 
+### R11
+Added Caps Images support (.ips floppy disk images)
+https://github.com/crystalct/capsimage
+
 
 What's new since 0.8.29-WIP3
 ============================
