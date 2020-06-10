@@ -60,13 +60,24 @@ Requires:
 - ps3 ready to boot homebrew programs
 - kickstart rom
 
-Kickstart roms:
-The main kickstart roms files are:
+Kickstart roms:</br>
+the main kickstart rom files are:
 |System|Version|Filename|Size|MD5|
 |---|---|---|---|---|
 |A500|KS v1.3 rev 34.005|**kick34005.A500**|262 144|82a21c1890cae844b3df741f2762d48d|
+|A500+|KS v2.04 rev 37.175|**kick37175.A500**|524 288|dc10d7bdd1b6f450773dfb558477c230|
 |A600|KS v3.1 rev 40.063|**kick40063.A600**|524 288|e40a5dfb3d017ba8779faba30cbd1c8e|
 |A1200|KS v3.1 rev 40.068|**kick40068.A1200**|524 288|646773759326fbac3b2311fd8c8793ee|
+|A4000|KS v3.1 rev 40.068|**kick40068.A4000**|524 288|9bdedde6a4f33555b4a270c8ca53297d|
+
+You can also use legally purchased BIOS from Amiga Forever:</br>
+|System|Version|Filename|Size|MD5|
+|---|---|---|---|---|
+|A500|amiga-os-130.rom|**kick34005.A500**|262 144|82a21c1890cae844b3df741f2762d48d|
+|A500+|amiga-os-204.rom|**kick37175.A500**|524 288|dc10d7bdd1b6f450773dfb558477c230|
+|A600|amiga-os-310-a600.rom|**kick40063.A600**|524 288|e40a5dfb3d017ba8779faba30cbd1c8e|
+|A1200|amiga-os-310-a1200.rom|**kick40068.A1200**|524 288|646773759326fbac3b2311fd8c8793ee|
+|A4000|amiga-os-310-a4000.rom|**kick40068.A4000**|524 288|9bdedde6a4f33555b4a270c8ca53297d|
 
 
 Controls:
@@ -126,6 +137,17 @@ Added Caps Images support (.ips floppy disk images)
 https://github.com/crystalct/capsimage </br>
 Added SELECT, L3 and R3 as user defined keyboard keys </br>
 Added defaults values for user defined keyboard keys
+
+### IPF support
+Most full-price commercial Amiga games had some form of custom disk format and/or copy protection on them. For this reason, most commercial Amiga games cannot be stored in ADF files unaltered, but there is an alternative called Interchangeable Preservation Format (IPF) which was specifically designed for this purpose.</br>
+IPF support is done through CAPSIMG library.
+
+### Create a HDF image for a game from a WHDload archive
+- Download ADFOpus (http://adfopus.sourceforge.net/).</br>
+- Extract files from the compressed WHDload file (.lha, .zip, .rar etc. etc.) to a directory</br>
+- Pack the directory in a HDF file with ADFOpus (see [Allan Lindqvist's tutorial](http://lindqvist.synology.me/wordpress/?page_id=182) - Create WHDLoad.hdf section);
+
+Note the size of the HDF specified by SIZE_OF_HDF must be greater than size of the directory to store the additional filesystem informations (f.ex a 1.25 ratio).
 
 
 What's new since 0.8.29-WIP3
