@@ -64,13 +64,19 @@ Controls:
 - CROSS    - joystick button 1
 - SQUARE   - mouse button 1
 - TRIANGLE - mouse button 2
-- CIRCLE   - user defined keyboard key
+- CIRCLE   - user defined keyboard key (default: SPACE)
+- SELECT   - user defined keyboard key (default: ESC)
+- L1       - user defined keyboard key (default: LSHIFT)
+- R1       - user defined keyboard key (default: RETURN)
+- L2       - user defined keyboard key (default: F1)
+- L3       - user defined keyboard key (default: F2)
+- R3       - user defined keyboard key (default: F3)
 - press R2 to activate virtual keyboard (vkb), release R2 to hide it.
   If vkb is shown press left/right digital pad to select the current
   key. Press the 'up' digital pad button to actually simualte key press
-  of the current key. L1, L2, R1 ann CIRCLE buttons are user defined keys. 
+  of the current key. L1, L2, R1, L3, R3, CIRCLE abd SELECT buttons are user defined keys. 
   If vkb is shown press L1 to define L1 button, press L2 to define L2 button
-  and press R1 to define R1 button. Later on (when keyboard is hidden) 
+  and press R1 to define R1 button, etc. Later on (when keyboard is hidden) 
   if you press L1, L2 etc. it will simulate assigned key press / release.
 - joypad 1 (emulates joystick 1 and mouse 1)
 - joypad 2 (emulates joystick 2) - if you want to enable 2-joystick mode, plug-in
@@ -109,7 +115,8 @@ hardfile=read-write,0,0,0,512,/dev_usb000/uae/system.hdf
 ### R11
 Added Caps Images support (.ips floppy disk images)
 https://github.com/crystalct/capsimage </br>
-Added SELECT, L3 and R3 as defined keyboard keys
+Added SELECT, L3 and R3 as user defined keyboard keys </br>
+Added defaults values for user defined keyboard keys
 
 
 What's new since 0.8.29-WIP3
