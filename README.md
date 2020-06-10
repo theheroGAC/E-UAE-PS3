@@ -108,7 +108,7 @@ hardfile=read-write,0,0,0,512,/dev_usb000/uae/system.hdf
 
 ### R11
 Added Caps Images support (.ips floppy disk images)
-https://github.com/crystalct/capsimage </br->
+https://github.com/crystalct/capsimage </br>
 Added SELECT, L3 and R3 as defined keyboard keys
 
 
