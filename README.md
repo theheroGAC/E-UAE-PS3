@@ -74,7 +74,7 @@ Controls:
 - press R2 to activate virtual keyboard (vkb), release R2 to hide it.
   If vkb is shown press left/right digital pad to select the current
   key. Press the 'up' digital pad button to actually simualte key press
-  of the current key. L1, L2, R1, L3, R3, CIRCLE abd SELECT buttons are user defined keys. 
+  of the current key. L1, L2, R1, L3, R3, CIRCLE and SELECT buttons are user defined keys. 
   If vkb is shown press L1 to define L1 button, press L2 to define L2 button
   and press R1 to define R1 button, etc. Later on (when keyboard is hidden) 
   if you press L1, L2 etc. it will simulate assigned key press / release.
