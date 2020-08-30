@@ -37,8 +37,6 @@
 #include "ps3thumbnail.h"
 #include "cell.h"
 #include "log.h"
-#include <sys/stat.h>
-#include <lv2/sysfs.h>
 
 
 #define MPOS_CFG_SELECT 0
@@ -56,7 +54,6 @@
 #define MPOS_MENU_SOUND 10
 #define MPOS_MENU_MISC 11
 #define MPOS_RESET 12
-#define MPOS_BACKFBNEO 13
 
 
 #define MPOS_STATE_SLOT 0
@@ -78,7 +75,7 @@
 #define MPOS_CPU_TYPE 0
 #define MPOS_CPU_SPEED 1
 #define MPOS_CPU_EXACT 2
-#define MPOS_CPU_COMPAT 3
+#define MPOS_CPU_COMPAT 3 
 #define MPOS_CPU_CHIP_MEM 4
 #define MPOS_CPU_BOGO_MEM 5
 #define MPOS_CPU_FAST_MEM 6
@@ -104,7 +101,7 @@
 #define MPOS_SOUND_CLICKS 3
 #define MPOS_SOUND_CLICKS_VOL 4
 
-#define MPOS_MISC_LEDS 0
+#define MPOS_MISC_LEDS 0 
 #define MPOS_MISC_JOY_PORTS 1
 #define MPOS_MISC_MOUSE_SPEED 2
 #define MPOS_MISC_FLOPPY_SPEED 3
@@ -132,8 +129,7 @@
 #define MAX_DISK 6
 
 #ifdef __PS3__
-#define SAVE_PATH "/dev_hdd0/game/FBNE00123/USRDIR/EUAE/SAVE/"
-#define FLOPPYTMP "/dev_hdd0/game/FBNE00123/USRDIR/EUAE/FLOPPYTMP/"
+#define SAVE_PATH "/dev_hdd0/game/EUAE00829/USRDIR/SAVE/"
 //#define SAVE_PATH "/dev_usb000/uae/save/"
 #else
 #define SAVE_PATH "./save/"
@@ -156,47 +152,6 @@ char* rpath[] = {"/", "/home/ole/apps/uae", NULL};
 #define RELEASE_VER " "
 #endif
 
-void clearFloppyTmp(const char * dir) {
-    int i;
-    s32 fd;
-    sysFSDirent entry;
-	u64 read;
-	char path[1024];
-
-    i = sysFsOpendir( dir, &fd );
-	if( i )
-	{
-		printf("sysFsOpendir( %s ): %i\n", dir, i );
-		return ;
-	}
-	while( !sysFsReaddir( fd, &entry , &read ) && read > 0 )
-	{
-	    if( !entry.d_namlen )//wtf?!
-			continue;
-
-		if( entry.d_name[ 0 ] == '.' )
-		{
-			//dot
-			if( entry.d_name[ 1 ] == 0 )
-			{
-				continue;
-			}
-			//dotdot
-			if( entry.d_name[ 1 ] == '.' && entry.d_name[ 2 ] == 0 )
-			{
-				continue;
-			}
-		}
-		if( entry.d_type == 2 )
-		{
-			//Delete file
-			snprintf(path, 1024, "%s%s", FLOPPYTMP, entry.d_name);
-			sysFsUnlink(path);
-			continue;
-		}
-	}
-    return;
-}
 
 char* statline[] = {
 	"\a1 select file    \a0 exit",			//0
@@ -224,7 +179,7 @@ unsigned char color_top[] = {2,4};
 
 char* statline_msg[128] = {0};
 
-char* config_name = NULL;
+char* config_name = NULL; 
 char* kickrom_name = NULL;
 char* hdf_name[MAX_DISK];
 char memsize[16 * 2];
@@ -236,7 +191,7 @@ int ovl_top = 60;
 
 char tmpPath[512];
 // screen params
-int params[21];
+int params[20];
 
 
 int screenId = 0;
@@ -343,8 +298,8 @@ void update_title_bar(void) {
 		getMemorySize(currprefs.fastmem_size,1),
 		getBogoSize(currprefs.bogomem_size)
 	);
-	draw_rect(ovl_left+2*8-30,ovl_top+26,580+60,8,1); //clean the previous text off the scrren //24 * 8, 408
-	draw_text(ovl_left+2*8-30,ovl_top+26, (unsigned char*) tmp , color_hi);
+	draw_rect(ovl_left+2*8,ovl_top+26,580,8,1); //clean the previous text off the scrren //24 * 8, 408
+	draw_text(ovl_left+2*8,ovl_top+26, (unsigned char*) tmp , color_hi);
 
 }
 
@@ -370,54 +325,50 @@ void  init_main_screen(int full) {
 	int posY = ovl_top + 20;
 
 	//shade around the menu edges
-	//draw_shade(ovl_left - 1, posY - 12, 602, 212, NULL, 0);
-	draw_shade(ovl_left - 1 -30, posY - 10, 602+30+30, 217, NULL, 0);
+	draw_shade(ovl_left - 1, posY - 12, 602, 212, NULL, 0);
 
 	if (full) {
 		//background
-		draw_rect(ovl_left -30, posY - 10, 600+30+30,20, 4);
+		draw_rect(ovl_left , posY - 12, 600,20, 4);
 		//stripes
 		for (int i = 0; i < 3; i++) {
-			draw_rect(ovl_left - 1 -30, posY - 10 + (i * 5), 602+30+30, 2,  2);
+			draw_rect(ovl_left - 1, posY - 12 + (i * 5), 602, 2,  2);
 		}
 		//top line
-		draw_rect(ovl_left - 1-30, posY + 1, 602+30+30, 1,  2);
+		draw_rect(ovl_left - 1, posY - 1, 602, 1,  2);
 	}
 
 	//bottom line
-	//draw_rect(ovl_left - 1, posY + 200, 602, 1,  2);
-	draw_rect(ovl_left - 1 -30, posY + 207, 602+30+30, 1,  2);
+	draw_rect(ovl_left - 1, posY + 200, 602, 1,  2);
 	//left line
-	//draw_rect(ovl_left - 1, posY - 12, 1, 213, 2);
-	draw_rect(ovl_left - 1 -30, posY - 10, 1, 218, 2);
+	draw_rect(ovl_left - 1, posY - 12, 1, 213, 2);
 	//right line
-	//draw_rect(ovl_left + 600, posY - 12, 1, 213, 2);
-	draw_rect(ovl_left + 600+30, posY - 10, 1, 218, 2);
+	draw_rect(ovl_left + 600, posY - 12, 1, 213, 2);
 
 
 	if (full) {
 		//test alpha rectangle
-		draw_rect(ovl_left+0-30,ovl_top+22,600+30+30,180,1);
-		draw_rect(ovl_left+10-30,ovl_top+42,580+30+30,1,3);
+		draw_rect(ovl_left+0,ovl_top+20,600,180,1);
+		draw_rect(ovl_left+10,ovl_top+40,580,1,3);
 		//	draw_rect(10,132,300,1,3);
 
 		//decoration in top right corner
-		draw_rect(ovl_left + 584+30, ovl_top + 10, 12, 12, 2);
-		draw_text(ovl_left + 586+30,ovl_top + 12, "\a2", color_top);
+		draw_rect(ovl_left + 584, ovl_top + 8, 12, 12, 2);
+		draw_text(ovl_left + 586,ovl_top + 10, "\a2", color_top);
 
 		//black left and right delimiters around the decoration
-		draw_rect(ovl_left + 582+30, ovl_top + 10, 2, 12, 4);
-		draw_rect(ovl_left + 596+30, ovl_top + 10, 2, 12, 4);
+		draw_rect(ovl_left + 582, ovl_top + 8, 2, 12, 4);
+		draw_rect(ovl_left + 596, ovl_top + 8, 2, 12, 4);
 
 		//orange left and right  delimiters around the decoration
-		draw_rect(ovl_left + 580+30, ovl_top + 10, 2, 12, 2);
-		draw_rect(ovl_left + 598+30, ovl_top + 10, 2, 12, 2);
+		draw_rect(ovl_left + 580, ovl_top + 8, 2, 12, 2);
+		draw_rect(ovl_left + 598, ovl_top + 8, 2, 12, 2);
 
 
 		{
 			unsigned char version[256];
 			sprintf(version, " %s %s ", PACKAGE_STRING, RELEASE_VER);
-			draw_text(ovl_left-30,ovl_top + 12, version, color_top); // + 26
+			draw_text(ovl_left,ovl_top + 10, version, color_top); // + 26
 		}
 
 		sprintf(kickrom_name, "%s", currprefs.romfile);
@@ -425,25 +376,22 @@ void  init_main_screen(int full) {
 		update_title_bar();
 
 		screenId = MENU_MAIN;
-		max_menu_pos = 13;
+		max_menu_pos = 12;
 		thumbLoaded = 0;
 		update_menu();
 	}
 }
 
 void paint_status_bar(void) {
-	//draw_rect(ovl_left+10,ovl_top+200,580,1,3);
-	draw_rect(ovl_left+10-30,ovl_top+207,580+60,1,3);
+	draw_rect(ovl_left+10,ovl_top+200,580,1,3);
 	if (statusId < 0) {
 		return;
 	}
 	//draw either status line help text or the last message
 	if (statline_msg[0] == 0) {
-		//draw_text(ovl_left+10,ovl_top+206, (unsigned char*)statline[statusId], color_lo);
-		draw_text(ovl_left+10-30,ovl_top+213, (unsigned char*)statline[statusId], color_lo);
+		draw_text(ovl_left+10,ovl_top+206, (unsigned char*)statline[statusId], color_lo);
 	} else {
-		//draw_text(ovl_left+10,ovl_top+206, (unsigned char*)statline_msg, color_lo);
-		draw_text(ovl_left+10-30,ovl_top+213, (unsigned char*)statline_msg, color_lo);
+		draw_text(ovl_left+10,ovl_top+206, (unsigned char*)statline_msg, color_lo);
 		statline_msg[0] = 0;
 	}
 
@@ -509,9 +457,8 @@ int  wait_for_no_key(void) {
 int update_menu(void) {
 
 	//clean menu area
-	//draw_rect(ovl_left+0,ovl_top+50,600,170,1);
-	draw_rect(ovl_left+0-30,ovl_top+52,600+60,175,1);
-
+	draw_rect(ovl_left+0,ovl_top+50,600,170,1);
+	
 	switch (screenId) {
 		case MENU_MAIN:  update_main_menu(); break;
 		case MENU_CPU:   update_cpu_menu(); break;
@@ -520,11 +467,11 @@ int update_menu(void) {
 		case MENU_MISC:  update_misc_menu(); break;
 		case MENU_SAVE:  update_save_menu(); break;
 		case MENU_HDF:   update_hdf_menu(); break;
-
+		
 	} //end of switch
-
+	
 	paint_status_bar();
-
+	
 	update_menu_before_flush();
 	//draw_screen(1);
 
@@ -548,51 +495,51 @@ void update_menu_before_flush(void) {
 
 
 static int draw_menu_item(int index, char* name, char* value, int statId) {
-	draw_text(ovl_left+10-30,ovl_top+52 + index * 11, (unsigned char*)name , menu_pos == index ? color_bg:color_hi);
-	draw_text(ovl_left+118-30, ovl_top+52 + index * 11, (unsigned char*)value, color_lo);
+	draw_text(ovl_left+10,ovl_top+50 + index * 11, (unsigned char*)name , menu_pos == index ? color_bg:color_hi);
+	draw_text(ovl_left+118, ovl_top+50 + index * 11, (unsigned char*)value, color_lo);
 	if (menu_pos == index) {
 		statusId = statId;
-	}
+	} 
 	return 0;
 }
 
 //more space for the property name
 static int draw_menu_item2(int index, char* name, char* value, int statId) {
-	draw_text(ovl_left+10-30,ovl_top+52 + index * 11, (unsigned char*)name , menu_pos == index ? color_bg:color_hi);
-	draw_text(ovl_left+178-30, ovl_top+52 + index * 11, (unsigned char*)value, color_lo);
+	draw_text(ovl_left+10,ovl_top+50 + index * 11, (unsigned char*)name , menu_pos == index ? color_bg:color_hi);
+	draw_text(ovl_left+178, ovl_top+50 + index * 11, (unsigned char*)value, color_lo);
 	if (menu_pos == index) {
 		statusId = statId;
-	}
+	} 
 	return 0;
 }
 
 void update_cpu_menu(void) {
 	char string[32];
-
-
+	
+	
 	char* cpu_name = (char*)get_cpu_mode(currprefs.cpu_level * 2 + !currprefs.address_space_24);
 	draw_menu_item2(MPOS_CPU_TYPE, " CPU type           ", cpu_name, 4 );
-
+	
 	if (currprefs.m68k_speed == 0) {
 		strcpy(string, "real");
-	} else
+	} else 
 	if (currprefs.m68k_speed == -1) {
 		strcpy(string, "max ");
 	} else {
 		sprintf(string, "%d   ", currprefs.m68k_speed/512);
 	}
 	draw_menu_item2(MPOS_CPU_SPEED,  " CPU speed          ", string, 4);
-
+	
 	draw_menu_item2(MPOS_CPU_EXACT,  " CPU cycle exact    ", currprefs.cpu_cycle_exact ? "on" : "off", 4);
 	draw_menu_item2(MPOS_CPU_COMPAT, " CPU compatible     ", currprefs.cpu_compatible ? "on" : "off", 4);
-
+	
 	draw_menu_item2(MPOS_CPU_CHIP_MEM, " Chip memory        ", 	getMemorySize(currprefs.chipmem_size,0), 4);
 	draw_menu_item2(MPOS_CPU_BOGO_MEM, " Bogo memory        ", 	getBogoSize(currprefs.bogomem_size), 4);
 	draw_menu_item2(MPOS_CPU_FAST_MEM, " Fast memory        ", 	getMemorySize(currprefs.fastmem_size,0), 4);
 
 	max_menu_pos = MPOS_CPU_FAST_MEM;
 	update_title_bar();
-
+	
 }
 
  char* get_hdf_name(int index) {
@@ -639,9 +586,9 @@ static int hardfile_testrdb (char *filename)
 		}
 		*/
 		if (
-			!memcmp (tmp, "RDSK\0\0\0", 7) ||
-			!memcmp (tmp, "DRKS\0\0", 6) ||
-			(tmp[0] == 0x53 && tmp[1] == 0x10 && tmp[2] == 0x9b && tmp[3] == 0x13 && tmp[4] == 0 && tmp[5] == 0))
+			!memcmp (tmp, "RDSK\0\0\0", 7) || 
+			!memcmp (tmp, "DRKS\0\0", 6) || 
+			(tmp[0] == 0x53 && tmp[1] == 0x10 && tmp[2] == 0x9b && tmp[3] == 0x13 && tmp[4] == 0 && tmp[5] == 0)) 
 		{
 			// RDSK or ADIDE "encoded" RDSK
 			result = 1;
@@ -659,15 +606,15 @@ void update_hdf_menu(void) {
 	int i;
 	int len;
 	struct uaedev_mount_info* mi = currprefs.mountinfo;
-
+	
 	//draw hdf names
 	for (i = 0; i < MAX_DISK; i++) {
-		name = get_hdf_name(i);
+		name = get_hdf_name(i);		
 		if (name != NULL) {
 			strcpy(hdf_name[i], name);
 			len = strlen(name);
 			if (len > 60) { //28
-				name += (len-60); //28
+				name += (len-60); //28		
 			}
 		} else {
 			name = "\0";
@@ -676,14 +623,14 @@ void update_hdf_menu(void) {
 		sprintf(string	, " Disk %d      \0", i);
 		draw_menu_item(MPOS_HDF0 + i, string, name, 7);
 	}
-
+	
 	max_menu_pos = MPOS_HDF0 + MAX_DISK - 1;
-
+	
 }
 
 void update_video_menu(void) {
 	char string[32];
-
+	
 	char * chipset = "OCS";
 
 	if (currprefs.chipset_mask & CSMASK_AGA)
@@ -696,7 +643,7 @@ void update_video_menu(void) {
 		chipset = "ECS_DENISE";
 
 	draw_menu_item2(MPOS_VIDEO_CHIP,      " Chipset            ", chipset , 4);
-
+	
 	draw_menu_item2(MPOS_VIDEO_SIGNAL,    " Signal             ", currprefs.ntscmode ? "NTSC" : "PAL", 4);
 	sprintf(string, "%d ", currprefs.gfx_framerate);
 	draw_menu_item2(MPOS_VIDEO_FSKIP,     " Frame skip         ", string, 4);
@@ -722,9 +669,9 @@ void update_video_menu(void) {
 
 
 	max_menu_pos = MPOS_VIDEO_POS_Y;
-
+	
 	update_title_bar();
-
+	
 }
 
 void update_sound_menu(void) {
@@ -738,16 +685,16 @@ void update_sound_menu(void) {
 	sprintf(string, "%d ", (100 - currprefs.dfxclickvolume));
 	draw_menu_item2(MPOS_SOUND_CLICKS_VOL,  " Drive click volume ", string, 4);
 
-	max_menu_pos = MPOS_SOUND_CLICKS_VOL;
+	max_menu_pos = MPOS_SOUND_CLICKS_VOL;	
 }
 
 void update_misc_menu(void) {
 	char string[32];
 
-	draw_menu_item2(MPOS_MISC_LEDS,       " LEDs               ", currprefs.leds_on_screen? "on ": "off", 4);
-
-
-	int j0 = currprefs.jport0 / JSEM_JOYS;
+	draw_menu_item2(MPOS_MISC_LEDS,       " LEDs               ", currprefs.leds_on_screen? "on ": "off", 4);	
+	
+	
+	int j0 = currprefs.jport0 / JSEM_JOYS; 
 	int j1 = currprefs.jport1 / JSEM_JOYS;
 	if (j0 == 2 && j1 == 1) {
 		strcpy(string, "mouse & joy-1  ");
@@ -765,10 +712,10 @@ void update_misc_menu(void) {
 
 	sprintf(string, "%d %%", currprefs.floppy_speed);
 	draw_menu_item2(MPOS_MISC_FLOPPY_SPEED, " Floppy speed       ", string, 4);
-
+	
 	draw_menu_item2(MPOS_MISC_QUIT, " >>  QUIT E-UAE  << ", " ", 6);
-
-	max_menu_pos = MPOS_MISC_QUIT;
+		
+	max_menu_pos = MPOS_MISC_QUIT;	
 }
 
 void update_save_menu(void) {
@@ -778,8 +725,8 @@ void update_save_menu(void) {
 	if (excludeArea) {
 		draw_rect(ovl_left+0,ovl_top+50,340,150,1);
 	} else {
-		draw_rect(ovl_left+0-30,ovl_top+50,600+60,150,1);
-	}
+		draw_rect(ovl_left+0,ovl_top+50,600,150,1);
+	} 
 
 	sprintf(string, "%d", stateSlot);
 	draw_menu_item2(MPOS_STATE_SLOT,    " Slot               ",  string, 5);
@@ -788,10 +735,10 @@ void update_save_menu(void) {
 	draw_menu_item2(MPOS_STATE_EPTY_2,  "                    ", " ", 6);
 	draw_menu_item2(MPOS_STATE_EPTY_3,  "                    ", " ", 6);
 	draw_menu_item2(MPOS_STATE_SAVE,    "     >> SAVE <<     ", " ", 6);
+	
 
-
-	max_menu_pos = MPOS_STATE_SAVE;
-
+	max_menu_pos = MPOS_STATE_SAVE;	
+	
 }
 
 void update_main_menu(void) {
@@ -804,7 +751,7 @@ void update_main_menu(void) {
 	len = strlen(config_name);
 	name = config_name;
 	if (len > 64) { //28
-		name += (len-64); //28
+		name += (len-64); //28		
 	}
 	draw_menu_item(MPOS_CFG_SELECT, " Config file ", name, 0);
 
@@ -814,13 +761,13 @@ void update_main_menu(void) {
 		len = strlen(currprefs.df[i]);
 		name = currprefs.df[i];
 		if (len > 60) { //28
-			name += (len-60); //28
+			name += (len-60); //28		
 		}
 		draw_menu_item(MPOS_FLOPPY1 + i, string, name, 1);
 	}
-
+	
 	draw_menu_item(MPOS_KICK_ROM,   " Kick ROM    ", currprefs.romfile, 0);
-
+	
 	draw_menu_item(MPOS_MENU_HDF,   " Hard files  ", "=>", 2);
 	draw_menu_item(MPOS_MENU_SAVE,  " Save state  ", "=>", 2);
 	draw_menu_item(MPOS_MENU_CPU,   " CPU & RAM   ", "=>", 2);
@@ -829,10 +776,7 @@ void update_main_menu(void) {
 	draw_menu_item(MPOS_MENU_MISC,  " Misc.       ", "=>", 2);
 
 	draw_menu_item(MPOS_RESET,      " >> RESET << ", " ", 3);
-	draw_menu_item2(MPOS_BACKFBNEO,				" Back to FB Neo RL Plus", "", 3);
-
-	//max_menu_pos = MPOS_RESET;
-	max_menu_pos = MPOS_BACKFBNEO;
+	max_menu_pos = MPOS_RESET;
 
 }
 
@@ -847,7 +791,7 @@ int do_action(int action) {
 		case MENU_SAVE:  return action_state_menu(action); break;
 		case MENU_HDF:   return action_hdf_menu(action); break;
 	} //end of switch
-
+		
 	return 0;
 }
 
@@ -943,14 +887,14 @@ int action_state_menu(int action) {
 				thumbLoaded = 1;
 				sprintf(tmpPath, "%sstate%03d.img", SAVE_PATH, stateSlot);
 				params[0] = 0;
-				thumb = ps3_load_thumbnail((unsigned char*) tmpPath, thumb, params, 20);
-				update_menu();
+				thumb = ps3_load_thumbnail((unsigned char*) tmpPath, thumb, params, 14);
+				update_menu();			
 			} else
 			if (action == ACTION_IDLE) {
 				write_log("idle state -> thumbnail loaded ??\n");
 			}
 		}; break;
-
+		
 		case MPOS_STATE_LOAD : {
 			if (action == 1) {
 				sprintf(tmpPath, "%sstate%03d.asf", SAVE_PATH, stateSlot);
@@ -962,10 +906,10 @@ int action_state_menu(int action) {
 					return 1;
 				}
 				update_menu();
-			}
+			} 
 
 		} break;
-
+		
 		case MPOS_STATE_SAVE : {
 			if (action == 1) {
 				params[0] = opt_scanline;
@@ -991,30 +935,30 @@ int action_state_menu(int action) {
 
 				//save thumbnail
 				sprintf(tmpPath, "%sstate%03d.img", SAVE_PATH, stateSlot);
-				ps3_save_thumb((unsigned char*)tmpPath, params, 20);
-
+				ps3_save_thumb((unsigned char*)tmpPath, params, 14);
+			
 				sprintf(tmpPath, "%sstate%03d.asf", SAVE_PATH, stateSlot);
 				//bug ? if file doesn't exist it cannot be written to ??
 				if (!fsel_file_exists(tmpPath)) {
 					fsel_file_create(tmpPath);
 				}
-
+				
 				savestate_initsave (tmpPath, 1);
 				save_state (tmpPath, "e-uae");
 				return 1;
-			}
+			} 
 		} break;
-
+		
 	}
 	return 0;
 }
 
 static void mount_hdf(int index, char* name) {
 	char * error = NULL;
-
+	
 	//check harddisk type
 	int type = hardfile_testrdb (name);
-
+	
 	//invalid hardfile
 	if (type < 0) {
 		error = "invalid hardfile";
@@ -1024,14 +968,14 @@ static void mount_hdf(int index, char* name) {
 		int surfaces = 0;
 		int reserved = 0;
 		int blocksize = 512;
-
+					
 		//Old File System -> use default values
 		if (type == 0) {
 			secspertrack = 32;
 			surfaces = 1;
 			reserved = 2;
 		}
-
+		
 		//a different hardfile entered
 		if (strcmp(name, hdf_name[index])) {
 			//ho previous hardfile in this slot -> add it
@@ -1039,9 +983,9 @@ static void mount_hdf(int index, char* name) {
 				//write_log("hardfile added!\n");
 				error = (char*)add_filesys_unit (currprefs.mountinfo, NULL /*dirdlg_devname*/, NULL /*dirdlg_volname */, name,
   					0 /*readonly */, secspertrack, surfaces, reserved, blocksize, 0 /*bootpri*/, 0, 0);
-			}
+			} 
 			//hardfile already exists in this slot -> reset it
-			else
+			else 
 			{
 				//write_log("hardfile set!\n");
 				error = (char *)set_filesys_unit (currprefs.mountinfo, index, NULL /*dirdlg_devname*/, NULL /*dirdlg_volname*/, name,
@@ -1077,10 +1021,10 @@ int action_hdf_menu(int action) {
 			}
 			name = fsel_open(rpath, hdf_name[index], previousDiskName, 3);
 			init_main_screen(0); //redraw decorations
-			//write_log("hardfile selected=%s \n", name);
+			//write_log("hardfile selected=%s \n", name); 
 			if (name != NULL) {
 				mount_hdf(index, name);
-			}
+			} 
 		}
 		else
 		//unmount disk
@@ -1090,7 +1034,7 @@ int action_hdf_menu(int action) {
 				kill_filesys_unit(currprefs.mountinfo, index);
 			}
 		}
-	} // end if
+	} // end if 	
 	update_menu();
 	return 0;
 }
@@ -1108,16 +1052,16 @@ int action_misc_menu(int action) {
 				currprefs.leds_on_screen = 1;
 			}
 		}; break;
-
+		
 		case MPOS_MISC_MOUSE_SPEED : {
 			ps2_mouse_speed ++;
 			if (ps2_mouse_speed > 5) {
 				ps2_mouse_speed = 1;
 			}
 		}; break;
-
+		
 		case MPOS_MISC_JOY_PORTS : {
-			int j0 = currprefs.jport0 / JSEM_JOYS;
+			int j0 = currprefs.jport0 / JSEM_JOYS; 
 			int j1 = currprefs.jport1 / JSEM_JOYS;
 			if (j0 == 2 && j1 == 1) { //mouse & joy-1
 				//switch to joy-2 & joy-1
@@ -1137,7 +1081,7 @@ int action_misc_menu(int action) {
 			inputdevice_config_change();
 			check_prefs_changed_custom();
 		}; break;
-
+		
 		case MPOS_MISC_FLOPPY_SPEED : {
 			changed_prefs.floppy_speed += 100;
 			if (changed_prefs.floppy_speed > 800) {
@@ -1148,21 +1092,20 @@ int action_misc_menu(int action) {
 			}
 			DISK_check_change();
 		} break;
-
+		
 		case MPOS_MISC_QUIT : {
 			/*
 			if (uae_get_state() == UAE_STATE_STOPPED) {
 			}
 			write_log("uae state=%i \n", uae_get_state() );
 			*/
-			clearFloppyTmp(FLOPPYTMP);
 			uae_quit();
 			return -1;
-		}
+		} 
 	} //end of switch
 	update_menu();
 	return 0;
-}
+}	
 
 int action_sound_menu(int action) {
 	if (action == ACTION_IDLE) {
@@ -1177,7 +1120,7 @@ int action_sound_menu(int action) {
 				changed_prefs.produce_sound = currprefs.produce_sound + 1;
 			}
 		}; break;
-
+		
 		case  MPOS_SOUND_INTERPOL : {
 			char* mode = (char*)get_sound_interpol_mode(currprefs.sound_interpol + 1);
 			if (mode == NULL) {
@@ -1206,9 +1149,9 @@ int action_sound_menu(int action) {
 			changed_prefs.dfxclick[0] = 1 - currprefs.dfxclick[0];
 			changed_prefs.dfxclick[1] = changed_prefs.dfxclick[0];
 			changed_prefs.dfxclick[2] = changed_prefs.dfxclick[0];
-			changed_prefs.dfxclick[3] = changed_prefs.dfxclick[0];
+			changed_prefs.dfxclick[3] = changed_prefs.dfxclick[0]; 
 		} break;
-
+		
 		case MPOS_SOUND_CLICKS_VOL : {
 			changed_prefs.dfxclickvolume = ((currprefs.dfxclickvolume / 10) * 10) - 10;
 			if (changed_prefs.dfxclickvolume < 0) {
@@ -1242,42 +1185,42 @@ int action_video_menu(int action) {
 		//from OCS switch to ECS_AGNUS
 		else if ((currprefs.chipset_mask & CSMASK_ECS_AGNUS) == 0 && (currprefs.chipset_mask & CSMASK_ECS_DENISE) == 0 ) {
 			changed_prefs.chipset_mask = currprefs.chipset_mask;
-			changed_prefs.chipset_mask |= CSMASK_ECS_AGNUS;
+			changed_prefs.chipset_mask |= CSMASK_ECS_AGNUS;  
 		}
 		//from ECS_AGNUS switch to ECS_DENISE
 		else if ((currprefs.chipset_mask & CSMASK_ECS_AGNUS) == 1 && (currprefs.chipset_mask & CSMASK_ECS_DENISE) == 0 ) {
 			changed_prefs.chipset_mask = currprefs.chipset_mask;
-			changed_prefs.chipset_mask &= ~CSMASK_ECS_AGNUS;
-			changed_prefs.chipset_mask |= CSMASK_ECS_DENISE;
+			changed_prefs.chipset_mask &= ~CSMASK_ECS_AGNUS;  
+			changed_prefs.chipset_mask |= CSMASK_ECS_DENISE;  
 		}
 		//from ECS_DENISE switch to full ECS
 		else if ((currprefs.chipset_mask & CSMASK_ECS_AGNUS) == 0 && (currprefs.chipset_mask & CSMASK_ECS_DENISE) ) {
 			changed_prefs.chipset_mask = currprefs.chipset_mask;
-			changed_prefs.chipset_mask |= CSMASK_ECS_AGNUS;
+			changed_prefs.chipset_mask |= CSMASK_ECS_AGNUS;  
 		}
-
+		
 		} break;
-
+		
 		case MPOS_VIDEO_SIGNAL: {
 			changed_prefs.ntscmode = 1 - currprefs.ntscmode;
 		} break;
-
+		
 		case MPOS_VIDEO_FSKIP : {
 			changed_prefs.gfx_framerate++;
 			if (changed_prefs.gfx_framerate > 20) {
 				changed_prefs.gfx_framerate = 1;
 			}
 		} break;
-
+		
 		case MPOS_VIDEO_VSYNC : {
 			changed_prefs.gfx_vsync = 1 - changed_prefs.gfx_vsync;
 			vsync_enabled = changed_prefs.gfx_vsync;
 		} break;
-
+		
 		case MPOS_VIDEO_BLITS : {
 			changed_prefs.immediate_blits = 1 - changed_prefs.immediate_blits;
 		} break;
-
+		
 		case MPOS_VIDEO_COLLISION : {
 			char * mode = (char*)get_collision_mode(currprefs.collision_level + 1);
 			if (mode == NULL) {
@@ -1286,10 +1229,10 @@ int action_video_menu(int action) {
 				changed_prefs.collision_level = currprefs.collision_level+1;
 			}
 		} break;
-
+		
 		case MPOS_VIDEO_BLIT_EXACT: {
 			changed_prefs.blitter_cycle_exact = 1 - currprefs.blitter_cycle_exact;
-			currprefs.blitter_cycle_exact = changed_prefs.blitter_cycle_exact;
+			currprefs.blitter_cycle_exact = changed_prefs.blitter_cycle_exact; 
 		} break;
 
 		case MPOS_VIDEO_SCAN_LINE: {
@@ -1338,7 +1281,7 @@ int action_video_menu(int action) {
 				PS3_setScanlineDensity(PS3_getScanlineDensity() + ( update > 0 ? 0.2f : -0.2f));
 			}
 		} break;
-
+		
 		case MPOS_VIDEO_SCALE_X : {
 			int update = 0;
 			if (action == ACTION_LEFT) {
@@ -1438,7 +1381,7 @@ int action_video_menu(int action) {
 
 	} // end of switch
 	check_prefs_changed_custom();
-
+	
 	update_menu();
 	return 0;
 }
@@ -1449,7 +1392,7 @@ int action_cpu_menu(int action) {
 	}
 	switch(menu_pos) {
 		case MPOS_CPU_TYPE: {
-
+			
 			int type = currprefs.cpu_level * 2 + !currprefs.address_space_24;
 			int index = cpus[++type];
 			//skip to the beginning of the cpu types
@@ -1459,14 +1402,14 @@ int action_cpu_menu(int action) {
 			}
 			//skip undefined cpus
 			if (index < 0) {
-				type -= index; //note: subtracting negative value  -> addition
+				type -= index; //note: subtracting negative value  -> addition 
 			}
-
+			
 			changed_prefs.cpu_level = type / 2;
 			changed_prefs.address_space_24 = 1 - ( type % 2 );
-
+			
 		}; break;
-
+		
 		case MPOS_CPU_SPEED: {
 			if (changed_prefs.m68k_speed > 0) {
 				changed_prefs.m68k_speed /= 512;
@@ -1474,13 +1417,13 @@ int action_cpu_menu(int action) {
 			changed_prefs.m68k_speed ++;
 			if (changed_prefs.m68k_speed > 12) {
 				changed_prefs.m68k_speed = -1;
-			} else
+			} else 
 
 			if (changed_prefs.m68k_speed > 0) {
 				changed_prefs.m68k_speed*=512;
 			}
 		};	break;
-
+		
 		case MPOS_CPU_EXACT: {
 			changed_prefs.cpu_cycle_exact = 1 - currprefs.cpu_cycle_exact;
 			//exact & compatible cannot be turned on both at the same time
@@ -1488,15 +1431,15 @@ int action_cpu_menu(int action) {
 				changed_prefs.cpu_compatible = 0;
 			}
 		}; break;
-
+		
 		case MPOS_CPU_COMPAT: {
 			changed_prefs.cpu_compatible = 1 - currprefs.cpu_compatible;
 			//exact & compatible cannot be turned on both at the same time
 			if (changed_prefs.cpu_compatible && currprefs.cpu_cycle_exact) {
 				changed_prefs.cpu_cycle_exact = 0;
 			}
-		}; break;
-
+		}; break;	
+		
 		case MPOS_CPU_CHIP_MEM : {
 			changed_prefs.chipmem_size = currprefs.chipmem_size;
 			if (changed_prefs.chipmem_size == 0x80000) { // 512 kb
@@ -1505,7 +1448,7 @@ int action_cpu_menu(int action) {
 			{
 				changed_prefs.chipmem_size += 0x100000;
 				//if fastmem is present then max chip size is 2 Megs
-				if (currprefs.fastmem_size != 0 && changed_prefs.chipmem_size > 0x200000) {
+				if (currprefs.fastmem_size != 0 && changed_prefs.chipmem_size > 0x200000) { 
 					changed_prefs.chipmem_size = 0x80000; // back to 512 k
 				} else
 				//more than 8 megs of chip
@@ -1514,8 +1457,8 @@ int action_cpu_menu(int action) {
 				}
 			}
 			memory_reset();
-		} ; break;
-
+		} ; break;	
+		
 		case MPOS_CPU_BOGO_MEM : {
 			changed_prefs.bogomem_size = currprefs.bogomem_size;
 			if (changed_prefs.bogomem_size == 0x80000) {
@@ -1532,7 +1475,7 @@ int action_cpu_menu(int action) {
 			}
 			memory_reset();
 		} break;
-
+		
 		case MPOS_CPU_FAST_MEM : {
 			changed_prefs.fastmem_size = (currprefs.fastmem_size / 0x100000) * 0x100000;
 			changed_prefs.fastmem_size += 0x100000;
@@ -1556,16 +1499,12 @@ int action_main_menu(int action) {
 	if (!((action == ACTION_CROSS) | (action == ACTION_SQUARE))) {
 		return 0;
 	}
-	char* params[2] = { 0 };
-	params[0] = "gamesList";
-	params[1] = NULL;
-
 	switch(menu_pos) {
 		case MPOS_CFG_SELECT:
 			{
 				name = fsel_open(rpath, config_name, NULL, 1);
 				init_main_screen(0); //redraw decorations
-				if (name != NULL) {
+				if (name != NULL) {					
 					strcpy(config_name, name);
 					default_prefs(& changed_prefs, 0);
 					changed_prefs.chipmem_size = 0;
@@ -1641,10 +1580,10 @@ int action_main_menu(int action) {
 			return 0;
 			} ; break;
 		case MPOS_MENU_HDF:
-		case MPOS_MENU_SAVE :
-		case MPOS_MENU_CPU :
-		case MPOS_MENU_VIDEO :
-		case MPOS_MENU_SOUND :
+		case MPOS_MENU_SAVE : 
+		case MPOS_MENU_CPU : 
+		case MPOS_MENU_VIDEO : 
+		case MPOS_MENU_SOUND : 
 		case MPOS_MENU_MISC :{
 			screenId = MENU_HDF + (menu_pos - MPOS_MENU_HDF);
 			menu_pos = 0;
@@ -1654,11 +1593,6 @@ int action_main_menu(int action) {
 		/* RESET */
 		case MPOS_RESET : uae_reset(0);
 			return 1;
-
-		case MPOS_BACKFBNEO:
-            clearFloppyTmp(FLOPPYTMP);
-			sysProcessExitSpawn2( "/dev_hdd0/game/FBNE00123/USRDIR/RELOAD.SELF", (const char**)params, NULL, NULL, 0, 1001, 0x70 );
-			break;
 	}
 	return 0;
 }
@@ -1724,7 +1658,7 @@ void enter_options(void) {
 		} else
 		if (event & PAD_LEFT) {
 			exit = do_action(ACTION_LEFT);
-		}else
+		}else		
 		if (event & PAD_CIRCLE) {
 			if (screenId == MENU_MAIN) {
 				exit = 1;
@@ -1744,7 +1678,7 @@ void enter_options(void) {
 	}
 	wait_for_idle_event(3);
 	//clean menu
-	draw_rect(ovl_left-14-30,ovl_top+0,628+60,240, 0);
+	draw_rect(ovl_left-14,ovl_top+0,628,240, 0);
 	draw_screen(0); // show screen without overlay
 	write_log("ps3: returning from options! exit=%i \n", exit);
 
