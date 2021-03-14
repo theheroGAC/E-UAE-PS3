@@ -58,19 +58,45 @@ Features:
 
 Requires:
 - ps3 ready to boot homebrew programs
-- kickstart rom - see docs/readme
+- kickstart rom
+
+Kickstart roms:</br>
+the main kickstart rom files are:
+|System|Version|Filename|Size|MD5|
+|---|---|---|---|---|
+|A500|KS v1.3 rev 34.005|**kick34005.A500**|262 144|82a21c1890cae844b3df741f2762d48d|
+|A500+|KS v2.04 rev 37.175|**kick37175.A500**|524 288|dc10d7bdd1b6f450773dfb558477c230|
+|A600|KS v3.1 rev 40.063|**kick40063.A600**|524 288|e40a5dfb3d017ba8779faba30cbd1c8e|
+|A1200|KS v3.1 rev 40.068|**kick40068.A1200**|524 288|646773759326fbac3b2311fd8c8793ee|
+|A4000|KS v3.1 rev 40.068|**kick40068.A4000**|524 288|9bdedde6a4f33555b4a270c8ca53297d|
+
+You can also use legally purchased BIOS from Amiga Forever:</br>
+|System|Version|Filename|Size|MD5|
+|---|---|---|---|---|
+|A500|amiga-os-130.rom|**kick34005.A500**|262 144|82a21c1890cae844b3df741f2762d48d|
+|A500+|amiga-os-204.rom|**kick37175.A500**|524 288|dc10d7bdd1b6f450773dfb558477c230|
+|A600|amiga-os-310-a600.rom|**kick40063.A600**|524 288|e40a5dfb3d017ba8779faba30cbd1c8e|
+|A1200|amiga-os-310-a1200.rom|**kick40068.A1200**|524 288|646773759326fbac3b2311fd8c8793ee|
+|A4000|amiga-os-310-a4000.rom|**kick40068.A4000**|524 288|9bdedde6a4f33555b4a270c8ca53297d|
+
 
 Controls:
 - CROSS    - joystick button 1
 - SQUARE   - mouse button 1
 - TRIANGLE - mouse button 2
-- CIRCLE   - user defined keyboard key
+- CIRCLE   - user defined keyboard key (default: SPACE)
+- SELECT   - user defined keyboard key (default: ESC)
+- L1       - user defined keyboard key (default: LSHIFT)
+- R1       - user defined keyboard key (default: RETURN)
+- L2       - user defined keyboard key (default: F1)
+- L3       - user defined keyboard key (default: F2)
+- R3       - user defined keyboard key (default: F3)
 - press R2 to activate virtual keyboard (vkb), release R2 to hide it.
   If vkb is shown press left/right digital pad to select the current
   key. Press the 'up' digital pad button to actually simualte key press
-  of the current key. L1, L2, R1 ann CIRCLE buttons are user defined keys. 
+  of the current key. L1, L2, R1, L3, R3, CIRCLE and SELECT buttons are user defined keys. 
   If vkb is shown press L1 to define L1 button, press L2 to define L2 button
-  and press R1 to define R1 button. Later on (when keyboard is hidden) 
+  and press R1 to define R1 button, etc. Later on (when keyboard is hidden) 
   if you press L1, L2 etc. it will simulate assigned key press / release.
 - joypad 1 (emulates joystick 1 and mouse 1)
 - joypad 2 (emulates joystick 2) - if you want to enable 2-joystick mode, plug-in
@@ -105,6 +131,23 @@ hardfile=read-write,0,0,0,512,/dev_usb000/uae/system.hdf
   disk file has a different size. The first set of numbers is ok for hardfiles
   formated to OFS (old file system), the second set (zeros) is for harddisk files
   formated to RDB (fast file system). 
+
+### R11
+Added Caps Images support (.ips floppy disk images)
+https://github.com/crystalct/capsimage </br>
+Added SELECT, L3 and R3 as user defined keyboard keys </br>
+Added defaults values for user defined keyboard keys
+
+### IPF support
+Most full-price commercial Amiga games had some form of custom disk format and/or copy protection on them. For this reason, most commercial Amiga games cannot be stored in ADF files unaltered, but there is an alternative called Interchangeable Preservation Format (IPF) which was specifically designed for this purpose.</br>
+IPF support is done through CAPSIMG library.
+
+### Create a HDF image for a game from a WHDload archive
+- Download ADFOpus (http://adfopus.sourceforge.net/).</br>
+- Extract files from the compressed WHDload file (.lha, .zip, .rar etc. etc.) to a directory</br>
+- Pack the directory in a HDF file with ADFOpus (see [Allan Lindqvist's tutorial](http://lindqvist.synology.me/wordpress/?page_id=182) - Create WHDLoad.hdf section);
+
+Note the size of the HDF specified by SIZE_OF_HDF must be greater than size of the directory to store the additional filesystem informations (f.ex a 1.25 ratio).
 
 
 What's new since 0.8.29-WIP3

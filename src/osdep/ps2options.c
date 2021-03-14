@@ -204,7 +204,10 @@ int statusId = -1;
 extern int  vkb_l1[2];
 extern int  vkb_l2[2];
 extern int  vkb_r1[2];
+extern int  vkb_l3[2];
+extern int  vkb_r3[2];
 extern int  vkb_circle[2];
+extern int  vkb_select[2];
 
 extern int opt_scanline;
 extern int opt_scanline_density;
@@ -800,14 +803,20 @@ static void applySavedParams() {
 		opt_pos_x = 0;
 		opt_pos_y = 0;
 
-		vkb_l1[0] = 0;
-		vkb_l1[1] = 0;
+		vkb_l1[0] = 5;
+		vkb_l1[1] = 5;
 		vkb_r1[0] = 0;
 		vkb_r1[1] = 0;
-		vkb_l2[0] = 0;
-		vkb_l2[1] = 0;
-		vkb_circle[0] = 0;
-		vkb_circle[1] = 0;
+		vkb_l2[0] = 20;
+		vkb_l2[1] = 20;
+		vkb_l3[0] = 21;
+		vkb_l3[1] = 21;
+		vkb_r3[0] = 22;
+		vkb_r3[1] = 22;
+		vkb_circle[0] = 3;
+		vkb_circle[1] = 3;
+		vkb_select[0] = 2;
+		vkb_select[1] = 2;
 
 	} else {
 		opt_scanline = params[1];
@@ -825,6 +834,12 @@ static void applySavedParams() {
 		vkb_l2[1] = params[12];
 		vkb_circle[0] = params[13];
 		vkb_circle[1] = params[14];
+		vkb_select[0] = params[15];
+		vkb_select[1] = params[16];
+		vkb_r3[0] = params[17];
+		vkb_r3[1] = params[18];
+		vkb_l3[0] = params[19];
+		vkb_l3[1] = params[20];
 	}
 
 	if (opt_scanline == 0) {
@@ -911,6 +926,12 @@ int action_state_menu(int action) {
 				params[11] = vkb_l2[1];
 				params[12] = vkb_circle[0];
 				params[13] = vkb_circle[1];
+				params[14] = vkb_select[0];
+				params[15] = vkb_select[1];
+				params[16] = vkb_r3[0];
+				params[17] = vkb_r3[1];
+				params[18] = vkb_l3[0];
+				params[19] = vkb_l3[1];
 
 				//save thumbnail
 				sprintf(tmpPath, "%sstate%03d.img", SAVE_PATH, stateSlot);

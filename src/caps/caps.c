@@ -8,6 +8,7 @@
  * Based on Win32 CAPS code by Toni Wilen
  */
 
+
 #include "sysconfig.h"
 #include "sysdeps.h"
 
@@ -22,7 +23,7 @@ static int caps_locked[4];
 static int caps_flags = DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD|DI_LOCK_TYPE;
 #define LIB_TYPE 1
 
-
+#ifndef __PS3__
 #ifndef TARGET_AMIGAOS
 
 /*
@@ -411,6 +412,7 @@ static int load_capslib (void)
 
 #endif
 
+#endif // __PS3__
 
 /*
  * CAPS support proper starts here
@@ -419,10 +421,12 @@ static int load_capslib (void)
  */
 int caps_init (void)
 {
-    static int init, noticed;
+    printf("OK CPAS\n");
+	static int init, noticed;
     unsigned int i;
     struct CapsVersionInfo cvi;
 
+#ifndef __PS3__
     if (init)
 	return 1;
 
@@ -436,6 +440,8 @@ int caps_init (void)
 	noticed = 1;
 	return 0;
     }
+#endif
+    
     init = 1;
     cvi.type = LIB_TYPE;
     CAPSGetVersionInfo (&cvi, 0);

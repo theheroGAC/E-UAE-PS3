@@ -68,8 +68,14 @@ int  vkb_l2[2];
 char vkb_l2_press[2];
 int  vkb_r1[2];
 char vkb_r1_press[2];
+int  vkb_l3[2];
+char vkb_l3_press[2];
+int  vkb_r3[2];
+char vkb_r3_press[2];
 int  vkb_circle[2];
 char vkb_circle_press[2];
+int vkb_select[2];
+char vkb_select_press[2];
 
 int screen_x_shift = 0; //HW screen x position
 int screen_y_shift = 0; //HW screen y position
@@ -93,14 +99,20 @@ void ps2_clean_pad_variables(void){
 		j_button2[i] = 0;
 		m_button1[i] = 0;
 		m_button2[i] = 0;
-		vkb_l1[i] = 0;
-		vkb_l2[i] = 0;
-		vkb_r1[i] = 0;
-		vkb_circle[i] = 0;
+		vkb_l1[i] = 5;  //LSHIFT
+		vkb_l2[i] = 20;  //F1
+		vkb_l3[i] = 21;  //F2
+		vkb_r3[i] = 22;  //F3
+		vkb_r1[i] = 0;  //RETURN
+		vkb_circle[i] = 3;  //SPACE
+		vkb_select[i] = 2;  //ESC
 		vkb_l1_press[i] = 0;
 		vkb_l2_press[i] = 0;
 		vkb_r1_press[i] = 0;
 		vkb_circle_press[i] = 0;
+		vkb_select_press[i] = 0;
+		vkb_l3_press[i] = 0;
+		vkb_r3_press[i] = 0;
 		j_mode[i] = 0;
 	}
 }
@@ -169,12 +181,12 @@ static int get_joystick_widget_first (int joy, int type)
 }
 
 struct inputdevice_functions inputdevicefunc_joystick = {
-    init_joysticks, 
-    close_joysticks, 
+    init_joysticks,
+    close_joysticks,
     acquire_joystick,
     unacquire_joystick,
-    read_joysticks, 
-    get_joystick_num, 
+    read_joysticks,
+    get_joystick_num,
     get_joystick_name,
     get_joystick_widget_num,
     get_joystick_widget_type,
@@ -197,10 +209,10 @@ static int init_mouse (void)
 	mouseInfo mi;
 	memset(&mi, 0, sizeof(mouseInfo));
 
-	ioMouseInit(4);	
+	ioMouseInit(4);
 	ioMouseGetInfo(&mi);
-	hw_mouse = mi.connected;	
-	
+	hw_mouse = mi.connected;
+
 	write_log("hw mouse connected=%i\n", mi.connected);
 	return 1;
 }
@@ -319,14 +331,14 @@ static int get_kb_widget_first (int mouse, int type)
 
 
 struct inputdevice_functions inputdevicefunc_keyboard = {
-    init_kb, 
-    close_kb, 
-    acquire_kb, 
+    init_kb,
+    close_kb,
+    acquire_kb,
     unacquire_kb,
-    read_kb, 
-    get_kb_num, 
+    read_kb,
+    get_kb_num,
     get_kb_name,
-    get_kb_widget_num, 
+    get_kb_widget_num,
     get_kb_widget_type,
     get_kb_widget_first
 };
@@ -425,7 +437,7 @@ void handle_events() {
   int jnr;
 
   int joy_event_detected = 0;
-  
+
   //joystick ports are checked regularly, so we can safely
   //put here detection of program termination via menu by user
   if (!PS3_appIsRunning()) {
@@ -433,7 +445,7 @@ void handle_events() {
 	return;
   }
 
-	for (jnr = 0; jnr < 2 && j_ready[jnr]; jnr++) { 
+	for (jnr = 0; jnr < 2 && j_ready[jnr]; jnr++) {
 		int p_left, p_right, p_up, p_down;
 		int ok = PS3_readPadButtons (&new_pad, &new_hat, jnr, 0);
 		if (ok) {
@@ -483,13 +495,13 @@ void handle_events() {
 		//if analog stick should emulate joystick
 		if (j_mode[jnr] == 1) {
 			if (hat_x < -1) {
-				p_left |= 1; 	
+				p_left |= 1;
 			} else
 			if (hat_x > 1) {
 				p_right |= 1;
 			}
 			if (hat_y < -1) {
-				p_up |= 1; 	
+				p_up |= 1;
 			} else
 			if (hat_y > 1) {
 				p_down |= 1;
@@ -507,7 +519,7 @@ void handle_events() {
 			}
 	        } else {
 			if (ps2_vkb_show) {
-				press_left = 0;	
+				press_left = 0;
 			} else
 			if (j_left[jnr]) {
 				j_left[jnr] = 0;
@@ -537,7 +549,7 @@ void handle_events() {
 			}
         	} else {
 			if (ps2_vkb_show) {
-				press_right = 0;	
+				press_right = 0;
 			} else
 			if (j_right[jnr]) {
 				j_right[jnr] = 0;
@@ -561,7 +573,7 @@ void handle_events() {
 		}
 
 		if(new_pad & PAD_CROSS) {
-			if (!j_button1[jnr]) { 
+			if (!j_button1[jnr]) {
 				j_button1[jnr] = 1;
 				setjoybuttonstate(jnr, 0, 1); // joy0, button0, state ON
 			}
@@ -580,9 +592,9 @@ void handle_events() {
 			if (hat_y != 0) setmousestate (jnr, 1, hat_y*ps2_mouse_speed, 0);
 		}
 
-		// mouse button 1 
+		// mouse button 1
 		if(new_pad & PAD_SQUARE) {
-			if (!m_button1[jnr]) { 
+			if (!m_button1[jnr]) {
 				m_button1[jnr] = 1;
 				setmousebuttonstate(jnr, 0, 1); // mouse0, button0, state ON
 			}
@@ -592,9 +604,9 @@ void handle_events() {
 				setmousebuttonstate(jnr, 0, 0); // mouse0, button0, state OFF
 			}
 		}
-		// mouse button 2 
+		// mouse button 2
 		if(new_pad & PAD_TRIANGLE) {
-			if (!m_button2[jnr]) { 
+			if (!m_button2[jnr]) {
 				m_button2[jnr] = 1;
 				setmousebuttonstate(jnr, 1, 1); // mouse0, button0, state ON
 			}
@@ -631,9 +643,9 @@ void handle_events() {
 				vkb_press_index(vkb_r1[jnr]);
 				vkb_r1_press[jnr] = 1;
 			}
-		} else 
+		} else
 		if (vkb_r1_press[jnr]) {
-			vkb_release_index(vkb_r1[jnr]);		
+			vkb_release_index(vkb_r1[jnr]);
 			vkb_r1_press[jnr] = 0;
 		}
 
@@ -646,7 +658,7 @@ void handle_events() {
 			}
 		}else
 		if (vkb_l1_press[jnr]) {
-			vkb_release_index(vkb_l1[jnr]);		
+			vkb_release_index(vkb_l1[jnr]);
 			vkb_l1_press[jnr] = 0;
 		}
 
@@ -654,33 +666,75 @@ void handle_events() {
 		if (new_pad & PAD_L2) {
 			if (press_vkb) {
 				vkb_l2[jnr] = vkb_get_key_index();
-			} else 
+			} else
 			{
 				vkb_press_index(vkb_l2[jnr]);
 				vkb_l2_press[jnr] = 1;
 			}
 		}else
 		if (vkb_l2_press[jnr]) {
-			vkb_release_index(vkb_l2[jnr]);		
+			vkb_release_index(vkb_l2[jnr]);
 			vkb_l2_press[jnr] = 0;
+		}
+
+		if (new_pad & PAD_L3) {
+			if (press_vkb) {
+				vkb_l3[jnr] = vkb_get_key_index();
+			} else
+			{
+				vkb_press_index(vkb_l3[jnr]);
+				vkb_l3_press[jnr] = 1;
+			}
+		}else
+		if (vkb_l3_press[jnr]) {
+			vkb_release_index(vkb_l3[jnr]);
+			vkb_l3_press[jnr] = 0;
+		}
+
+		if (new_pad & PAD_R3) {
+			if (press_vkb) {
+				vkb_r3[jnr] = vkb_get_key_index();
+			} else
+			{
+				vkb_press_index(vkb_r3[jnr]);
+				vkb_r3_press[jnr] = 1;
+			}
+		}else
+		if (vkb_r3_press[jnr]) {
+			vkb_release_index(vkb_r3[jnr]);
+			vkb_r3_press[jnr] = 0;
 		}
 
 		if (new_pad & PAD_CIRCLE) {
 			if (press_vkb) {
 				vkb_circle[jnr] = vkb_get_key_index();
-			} else 
+			} else
 			{
 				vkb_press_index(vkb_circle[jnr]);
 				vkb_circle_press[jnr] = 1;
 			}
 		}else
 		if (vkb_circle_press[jnr]) {
-			vkb_release_index(vkb_circle[jnr]);		
+			vkb_release_index(vkb_circle[jnr]);
 			vkb_circle_press[jnr] = 0;
 		}
+
+		if (new_pad & PAD_SELECT) {
+			if (press_vkb) {
+				vkb_select[jnr] = vkb_get_key_index();
+			} else
+			{
+				vkb_press_index(vkb_select[jnr]);
+				vkb_select_press[jnr] = 1;
+			}
+		}else
+		if (vkb_select_press[jnr]) {
+			vkb_release_index(vkb_select[jnr]);
+			vkb_select_press[jnr] = 0;
+		}
 	} // ok
-	else 
-	//no joy movement was detected 
+	else
+	//no joy movement was detected
 	{
 		if (j_mode[jnr] == 0) {
 			//keep moving the mouse
@@ -695,7 +749,7 @@ void handle_events() {
 		}
 	}
 
-  
+
 
 	}  //end for
 
@@ -704,10 +758,10 @@ void handle_events() {
 	if (hw_check++ > 100) {
 		mouseInfo mi;
 		ioMouseGetInfo(&mi);
-		hw_mouse = mi.connected;	
+		hw_mouse = mi.connected;
 
 		hw_check = 0;
-	} 
+	}
 
 	//check state of the HW mice
 	for (jnr = 0; jnr < hw_mouse && jnr < 2; jnr++) {
@@ -723,7 +777,7 @@ void handle_events() {
 			setmousebuttonstate(jnr, 0, md.buttons & 0x1); 			// mouse nr, button0, state
 			setmousebuttonstate(jnr, 1, (md.buttons >> 1) & 0x1); 	// mouse nr, button1, state
 		}
-	}	
+	}
 
 	//check HW keyboard
 	hwkb_update();
@@ -732,17 +786,17 @@ void handle_events() {
 	if (press_vkb && !ps2_vkb_show) {
 		ps2_vkb_show = 1;
 		vkb_redraw(1);
-	} else 
+	} else
 	if (!press_vkb && ps2_vkb_show && joy_event_detected) {
 		ps2_vkb_show = 0;
-		vkb_redraw(0);		
+		vkb_redraw(0);
 	}
 
 	if (ps2_vkb_show) {
 		if (press_left) {
 			if (press_left == 1) {
 				vkb_left();  //shift keyboard left
-			} 
+			}
 			press_left++;
 			if (press_left == 2) {
 				press_left = 1;

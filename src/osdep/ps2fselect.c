@@ -39,7 +39,7 @@ extern int ovl_left;
 extern int ovl_top;
 
 char** fsel_ext;
-char* fsel_ext_disk[] = {".adf", ".ADF", ".dms", ".DMS", ".zip", ".ZIP", NULL};
+char* fsel_ext_disk[] = {".adf", ".ADF", ".dms", ".DMS", ".zip", ".ZIP", ".ipf", ".IPF", NULL};
 char* fsel_ext_config[] = {".cfg", ".CFG", ".rc", ".RC", NULL};
 char* fsel_ext_kickrom[] = {".rom", ".ROM",  NULL};
 char* fsel_ext_hardfile[] = {".hdf", ".HDF",  NULL};

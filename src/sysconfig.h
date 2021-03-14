@@ -16,7 +16,7 @@
 //#define HAVE_BYTESWAP_H 1
 
 /* Define to 1 if you have the <caps/capsimage.h> header file. */
-/* #undef HAVE_CAPS_CAPSIMAGE_H */
+#define HAVE_CAPS_CAPSIMAGE_H 1
 
 /* Define to 1 if you have the `cfmakeraw' function. */
 #define HAVE_CFMAKERAW 1
@@ -35,7 +35,7 @@
 #define HAVE_DIRENT_H 1
 
 /* "Define to 1 if you have 'dlopen' function */
-#define HAVE_DLOPEN 1
+//#undef HAVE_DLOPEN 1
 
 /* Define to 1 if you have the <dustat.h> header file. */
 /* #undef HAVE_DUSTAT_H */
@@ -90,7 +90,7 @@
 #define HAVE_MKDIR 1
 
 /* Define to 1 if you have the `nanosleep' function. */
-/* #define HAVE_NANOSLEEP 1 /
+/* #define HAVE_NANOSLEEP 1 */
 
 /* Define to 1 if you have the <ncurses.h> header file. */
 #define HAVE_NCURSES_H 1
