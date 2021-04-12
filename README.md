@@ -142,6 +142,8 @@ Added defaults values for user defined keyboard keys
 Most full-price commercial Amiga games had some form of custom disk format and/or copy protection on them. For this reason, most commercial Amiga games cannot be stored in ADF files unaltered, but there is an alternative called Interchangeable Preservation Format (IPF) which was specifically designed for this purpose.</br>
 IPF support is done through CAPSIMG library.
 
+Thanks to Croage for ICON1.PAM and to Scratch for SND0.AT3
+
 ### Create a HDF image for a game from a WHDload archive
 - Download ADFOpus (http://adfopus.sourceforge.net/).</br>
 - Extract files from the compressed WHDload file (.lha, .zip, .rar etc. etc.) to a directory</br>
