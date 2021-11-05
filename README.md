@@ -269,3 +269,4 @@ Credits and thanks:
 - RCDRUMMOND for E-UAE
 - psl1ght sdk team
 - PS3 homebrew scene
+- Croage for ICON1.PAM and to Scratch for SND0.AT3
